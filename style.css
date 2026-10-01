@@ -1,0 +1,218 @@
+:root {
+    --bg-black: #0b0b0b;
+    --card-dark: #141414;
+    --gold-primary: #d4af37;
+    --gold-light: #f3e5ab;
+    --gold-dark: #aa820a;
+    --text-white: #ffffff;
+    --text-muted: #cccccc;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--bg-black);
+    color: var(--text-white);
+    line-height: 1.6;
+}
+
+header {
+    text-align: center;
+    padding: 40px 20px;
+    background: linear-gradient(180deg, #1a1505 0%, var(--bg-black) 100%);
+    border-bottom: 2px solid var(--gold-dark);
+    position: relative;
+}
+
+.admin-nav-link {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    color: var(--gold-primary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    border: 1px solid var(--gold-dark);
+    padding: 5px 12px;
+    border-radius: 4px;
+    background: #141414;
+}
+
+.admin-nav-link:hover {
+    background: var(--gold-primary);
+    color: black;
+}
+
+header h1 {
+    color: var(--gold-primary);
+    font-size: 2.8rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+}
+
+header h2 {
+    color: var(--gold-light);
+    font-size: 1.2rem;
+    font-weight: 400;
+    margin-bottom: 10px;
+}
+
+.status-badge {
+    display: inline-block;
+    background: #0f2d18;
+    color: #25d366;
+    border: 1px solid #25d366;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.banner-card {
+    background: var(--card-dark);
+    border: 1px solid var(--gold-dark);
+    border-radius: 8px;
+    padding: 30px;
+    text-align: center;
+    margin: 30px 0;
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.1);
+}
+
+.banner-card h3 {
+    color: var(--gold-primary);
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+}
+
+.services-section h2 {
+    text-align: center;
+    color: var(--gold-primary);
+    margin-bottom: 30px;
+    font-size: 2rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.service-box {
+    background: var(--card-dark);
+    border: 1px solid #332d12;
+    padding: 20px;
+    border-radius: 6px;
+    transition: 0.3s ease;
+}
+
+.service-box:hover {
+    border-color: var(--gold-primary);
+    transform: translateY(-3px);
+}
+
+.service-box h4 {
+    color: var(--gold-light);
+    margin-bottom: 8px;
+    font-size: 1.2rem;
+}
+
+.service-box p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+.post-card {
+    background: #141414;
+    border-left: 4px solid var(--gold-primary);
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 6px;
+}
+
+.post-card h4 {
+    color: var(--gold-light);
+    margin-bottom: 5px;
+}
+
+.post-date {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    display: block;
+    margin-bottom: 10px;
+}
+
+.post-media {
+    width: 100%;
+    max-height: 400px;
+    object-fit: contain;
+    background: black;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+.delete-btn {
+    background-color: #a82020;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    display: none; /* Hidden for normal visitors */
+}
+
+.chat-box {
+    background: linear-gradient(135deg, #1c1605, #120f03);
+    border: 1px solid var(--gold-dark);
+    padding: 30px;
+    border-radius: 8px;
+    margin-top: 40px;
+    text-align: center;
+}
+
+.chat-box input, .chat-box textarea {
+    width: 100%;
+    max-width: 500px;
+    padding: 10px;
+    margin: 8px 0;
+    background: #0b0b0b;
+    border: 1px solid #443b12;
+    color: white;
+    border-radius: 4px;
+}
+
+.whatsapp-btn {
+    display: inline-block;
+    background-color: #25d366;
+    color: white;
+    padding: 12px 30px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-top: 15px;
+}
+
+footer {
+    text-align: center;
+    padding: 25px;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    border-top: 1px solid #222;
+    margin-top: 40px;
+}

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://wa.me; img-src 'self' data: https:; style-src 'self' 'unsafe-inline';">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#d4af37">
+    <title>Feigh's Errands & Supplies | Your Trusted Hands in Nairobi</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .comment-section {
+            margin-top: 15px;
+            border-top: 1px solid #333;
+            padding-top: 10px;
+        }
+        .comment-box {
+            background: #0b0b0b;
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+        .comment-input-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .comment-input-row input {
+            flex: 1;
+            padding: 8px;
+            background: #0b0b0b;
+            border: 1px solid #443b12;
+            color: white;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+        .comment-btn {
+            background: var(--gold-primary);
+            color: black;
+            border: none;
+            padding: 8px 15px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Section -->
+    <header>
+        <a href="admin.html" class="admin-nav-link">🔒 Sister Login</a>
+        <h1>Feigh's Errands & Supplies</h1>
+        <h2>Your Trusted Hands in Nairobi ❤️</h2>
+        <p class="tagline">"Servicing the whole of Kenya — Major cities and even in the villages"</p>
+        <div class="status-badge">🟢 Open for Errands Today</div>
+    </header>
+
+    <div class="container">
+
+        <!-- Banner Card -->
+        <section class="banner-card">
+            <h3>🌍 Are You Abroad or Busy and Need Something Done in Kenya?</h3>
+            <p>We run errands on your behalf — reliably, conveniently, and professionally across all major cities and villages.</p>
+        </section>
+
+        <!-- Dynamic Posts Feed with Comments -->
+        <section class="services-section" id="dynamicPostsSection" style="display: none;">
+            <h2>Latest Updates & Deliveries</h2>
+            <div id="postsContainer"></div>
+        </section>
+
+        <!-- Services Section -->
+        <section class="services-section">
+            <h2>Our Services</h2>
+            <div class="services-grid">
+                <div class="service-box">
+                    <h4>🛒 Shopping & Grocery Runs</h4>
+                    <p>Supermarket, market & special requests handled with care.</p>
+                </div>
+                <div class="service-box">
+                    <h4>🎁 Gift Shopping & Delivery</h4>
+                    <p>Perfect for birthdays, anniversaries, and special occasions.</p>
+                </div>
+                <div class="service-box">
+                    <h4>📦 Parcel Collection & Delivery</h4>
+                    <p>Pickup and drop-off from offices, homes, or bus stations.</p>
+                </div>
+                <div class="service-box">
+                    <h4>🏠 Home & Personal Errands</h4>
+                    <p>Whatever you need done around the house or personally, we handle it.</p>
+                </div>
+                <div class="service-box">
+                    <h4>➕ Pharmacy & Personal Pickups</h4>
+                    <p>Health, beauty essentials, prescriptions & more.</p>
+                </div>
+                <div class="service-box">
+                    <h4>🏗️ Construction Materials Supply</h4>
+                    <p>Sourcing & delivery of building materials (cement, steel, sand, ballast, bricks & more).</p>
+                </div>
+                <div class="service-box">
+                    <h4>📄 Document Collection & Delivery</h4>
+                    <p>Safe, confidential, and timely handling of important paperwork.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Direct Customer Chat Widget -->
+        <section class="chat-box">
+            <h3 style="color: var(--gold-primary); margin-bottom: 10px;">💬 Direct Message Feigh on WhatsApp</h3>
+            <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 15px;">Type your request below and click send to connect instantly:</p>
+            <input type="text" id="clientName" placeholder="Your Name"><br>
+            <textarea id="clientMessage" rows="3" placeholder="What errand do you need done?"></textarea><br>
+            <button onclick="sendDirectMessage()" class="whatsapp-btn">📲 Send Message to WhatsApp</button>
+        </section>
+
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 Feigh's Errands & Supplies. All rights reserved.<br>Designed by Web Designer Barrack.</p>
+    </footer>
+
+    <!-- Script to Load Posts & Handle Secure Sanitized Comments -->
+    <script>
+        window.addEventListener('DOMContentLoaded', loadPublicPosts);
+
+        function loadPublicPosts() {
+            const savedPosts = JSON.parse(localStorage.getItem('feighPosts')) || [];
+            const section = document.getElementById('dynamicPostsSection');
+            const container = document.getElementById('postsContainer');
+            
+            if (savedPosts.length > 0) {
+                section.style.display = 'block';
+                container.innerHTML = '';
+                
+                savedPosts.forEach(post => {
+                    const postCard = document.createElement('div');
+                    postCard.className = 'post-card';
+                    
+                    let mediaHtml = '';
+                    if (post.mediaData) {
+                        if (post.mediaType && post.mediaType.includes('video')) {
+                            mediaHtml = `<video controls class="post-media"><source src="${post.mediaData}" type="${post.mediaType}"></video>`;
+                        } else {
+                            mediaHtml = `<img src="${post.mediaData}" alt="Update Media" class="post-media">`;
+                        }
+                    }
+
+                    postCard.innerHTML = `
+                        <h4>${escapeHtml(post.title)}</h4>
+                        <span class="post-date">Posted on: ${post.date}</span>
+                        ${mediaHtml}
+                        <p>${escapeHtml(post.content)}</p>
+                    `;
+
+                    // Comment Section Container
+                    const commentSection = document.createElement('div');
+                    commentSection.className = 'comment-section';
+                    commentSection.innerHTML = `<h5 style="color: var(--gold-light); margin-bottom: 8px;">Client Comments</h5>`;
+                    
+                    const commentsList = document.createElement('div');
+                    if (post.comments && post.comments.length > 0) {
+                        post.comments.forEach(c => {
+                            const cBox = document.createElement('div');
+                            cBox.className = 'comment-box';
+                            cBox.innerHTML = `<strong>${escapeHtml(c.name)}:</strong> `;
+                            cBox.appendChild(document.createTextNode(c.text));
+                            commentsList.appendChild(cBox);
+                        });
+                    } else {
+                        const noC = document.createElement('p');
+                        noC.style.cssText = 'font-size: 0.85rem; color: #777;';
+                        noC.textContent = 'No comments yet. Be the first to comment!';
+                        commentsList.appendChild(noC);
+                    }
+                    commentSection.appendChild(commentsList);
+
+                    // Input Form Row
+                    const inputRow = document.createElement('div');
+                    inputRow.className = 'comment-input-row';
+                    
+                    const nameInput = document.createElement('input');
+                    nameInput.type = 'text';
+                    nameInput.id = `commenterName_${post.id}`;
+                    nameInput.placeholder = 'Your name...';
+
+                    const textInput = document.createElement('input');
+                    textInput.type = 'text';
+                    textInput.id = `commenterText_${post.id}`;
+                    textInput.placeholder = 'Write a comment...';
+
+                    const btn = document.createElement('button');
+                    btn.className = 'comment-btn';
+                    btn.textContent = 'Post';
+                    btn.onclick = () => addComment(post.id);
+
+                    inputRow.appendChild(nameInput);
+                    inputRow.appendChild(textInput);
+                    inputRow.appendChild(btn);
+                    commentSection.appendChild(inputRow);
+
+                    postCard.appendChild(commentSection);
+                    container.appendChild(postCard);
+                });
+            } else {
+                section.style.display = 'none';
+            }
+        }
+
+        // Security Helper to neutralize HTML/Script injections
+        function escapeHtml(text) {
+            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+            return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+        }
+
+        function addComment(postId) {
+            const nameInput = document.getElementById(`commenterName_${postId}`);
+            const textInput = document.getElementById(`commenterText_${postId}`);
+            
+            const name = nameInput.value.trim() || 'Anonymous';
+            const text = textInput.value.trim();
+
+            if (!text) {
+                alert('Please type a comment before posting.');
+                return;
+            }
+
+            let posts = JSON.parse(localStorage.getItem('feighPosts')) || [];
+            posts = posts.map(post => {
+                if (post.id === postId) {
+                    if (!post.comments) post.comments = [];
+                    post.comments.push({ name, text });
+                }
+                return post;
+            });
+
+            localStorage.setItem('feighPosts', JSON.stringify(posts));
+            loadPublicPosts();
+        }
+
+        function sendDirectMessage() {
+            const name = document.getElementById('clientName').value || 'Customer';
+            const msg = document.getElementById('clientMessage').value || 'Hello, I have an inquiry.';
+            const text = `Hello Feigh, my name is ${name}. ${msg}`;
+            window.open(`https://wa.me/254712418841?text=${encodeURIComponent(text)}`, '_blank');
+        }
+    </script>
+
+</body>
+</html>
