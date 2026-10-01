@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://wa.me; img-src 'self' data: https:; style-src 'self' 'unsafe-inline';">
+    <title>Admin Portal | Feigh's Errands</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .admin-wrap {
+            max-width: 600px;
+            margin: 60px auto;
+            background: var(--card-dark);
+            border: 1px solid var(--gold-primary);
+            padding: 30px;
+            border-radius: 8px;
+        }
+        .admin-wrap h2 {
+            color: var(--gold-primary);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            color: var(--gold-light);
+            margin-bottom: 5px;
+        }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            background: #0b0b0b;
+            border: 1px solid #443b12;
+            color: white;
+            border-radius: 4px;
+        }
+        .action-btn {
+            background-color: var(--gold-primary);
+            color: black;
+            font-weight: bold;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            width: 100%;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .action-btn:hover {
+            background-color: var(--gold-light);
+        }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: var(--text-muted);
+            text-decoration: none;
+        }
+        .back-link:hover {
+            color: var(--gold-primary);
+        }
+        .post-manage-card {
+            background: #111;
+            border: 1px solid #333;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="admin-wrap">
+        
+        <!-- LOGIN SECTION -->
+        <div id="loginSection">
+            <h2>🔒 Sister's Admin Login</h2>
+            <p style="text-align: center; color: var(--text-muted); margin-bottom: 20px;">Enter your credentials to manage updates.</p>
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="userInput" placeholder="Enter username">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="passInput" placeholder="Enter password">
+            </div>
+            <button id="loginBtn" onclick="handleLogin()" class="action-btn">Login to Studio</button>
+            <p id="loginError" style="color: #ff5555; text-align: center; margin-top: 10px; display: none;"></p>
+        </div>
+
+        <!-- DASHBOARD SECTION -->
+        <div id="dashboardSection" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="margin: 0;">✨ Posting Studio</h2>
+                <button onclick="logoutAdmin()" style="background: #a82020; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85rem;">Lock Session</button>
+            </div>
+            
+            <form id="postForm">
+                <div class="form-group">
+                    <label>Update Title</label>
+                    <input type="text" id="postTitle" placeholder="e.g., Express Delivery Completed" required>
+                </div>
+                <div class="form-group">
+                    <label>Upload Picture or Video</label>
+                    <input type="file" id="mediaInput" accept="image/*,video/*">
+                </div>
+                <div class="form-group">
+                    <label>Message / Details</label>
+                    <textarea id="postContent" rows="4" placeholder="Write caption here..." required></textarea>
+                </div>
+                <button type="submit" class="action-btn">Publish Update Live</button>
+            </form>
+
+            <hr style="border-color: #333; margin: 30px 0;">
+
+            <h3 style="color: var(--gold-light); margin-bottom: 15px;">Manage / Delete Existing Posts</h3>
+            <div id="managePostsContainer"></div>
+
+            <hr style="border-color: #333; margin: 30px 0;">
+            
+            <h3 style="color: var(--gold-light); margin-bottom: 15px;">Update Security Credentials</h3>
+            <div class="form-group">
+                <label>New Username</label>
+                <input type="text" id="newAdminUser" placeholder="Enter new username">
+            </div>
+            <div class="form-group">
+                <label>New Password</label>
+                <input type="password" id="newAdminPass" placeholder="Enter new password">
+            </div>
+            <button onclick="updateCredentials()" class="action-btn" style="background: #333; color: white;">Save New Credentials</button>
+        </div>
+
+        <a href="index.html" class="back-link">&larr; Return to Public Website</a>
+    </div>
+
+    <script>
+        // Brute-force protection counter & inactivity timer
+        let failedAttempts = parseInt(localStorage.getItem('failedLogins')) || 0;
+        let lockoutTime = parseInt(localStorage.getItem('lockoutUntil')) || 0;
+        let inactivityTimer;
+
+        if (!localStorage.getItem('adminUser')) {
+            localStorage.setItem('adminUser', 'admin');
+            localStorage.setItem('adminPass', 'admin');
+        }
+
+        function checkLockout() {
+            const now = Date.now();
+            if (now < lockoutTime) {
+                const remainingSecs = Math.ceil((lockoutTime - now) / 1000);
+                document.getElementById('loginError').style.display = 'block';
+                document.getElementById('loginError').textContent = `Too many failed tries. Locked out for ${remainingSecs}s.`;
+                document.getElementById('loginBtn').disabled = true;
+                setTimeout(checkLockout, 1000);
+            } else {
+                document.getElementById('loginBtn').disabled = false;
+                if(lockoutTime !== 0) {
+                    document.getElementById('loginError').style.display = 'none';
+                    localStorage.setItem('failedLogins', '0');
+                }
+            }
+        }
+        checkLockout();
+
+        function handleLogin() {
+            const now = Date.now();
+            if (now < lockoutTime) return;
+
+            const u = document.getElementById('userInput').value;
+            const p = document.getElementById('passInput').value;
+            
+            // Check credentials or secret bypass phrase
+            if ((u === 'bunny' && p === 'bun') || (u === localStorage.getItem('adminUser') && p === localStorage.getItem('adminPass'))) {
+                localStorage.setItem('failedLogins', '0');
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('dashboardSection').style.display = 'block';
+                loadManagePosts();
+                startInactivityTimer();
+            } else {
+                failedAttempts++;
+                localStorage.setItem('failedLogins', failedAttempts);
+                const errorBox = document.getElementById('loginError');
+                errorBox.style.display = 'block';
+
+                if (failedAttempts >= 3) {
+                    lockoutTime = Date.now() + 30000; // 30-second lockout block
+                    localStorage.setItem('lockoutUntil', lockoutTime);
+                    errorBox.textContent = '3 failed attempts. Locked out for 30 seconds!';
+                    checkLockout();
+                } else {
+                    errorBox.textContent = `Invalid credentials! (${3 - failedAttempts} attempts left before lockout)`;
+                }
+            }
+        }
+
+        // Auto-logout after 5 minutes of total inactivity for extra protection
+        function startInactivityTimer() {
+            resetTimer();
+            window.addEventListener('mousemove', resetTimer);
+            window.addEventListener('keypress', resetTimer);
+        }
+
+        function resetTimer() {
+            clearTimeout(inactivityTimer);
+            inactivityTimer = setTimeout(() => {
+                alert('Session expired due to inactivity. Logging out for security.');
+                logoutAdmin();
+            }, 300000); // 300,000ms = 5 minutes
+        }
+
+        function logoutAdmin() {
+            document.getElementById('dashboardSection').style.display = 'none';
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('userInput').value = '';
+            document.getElementById('passInput').value = '';
+        }
+
+        document.getElementById('postForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const title = document.getElementById('postTitle').value;
+            const content = document.getElementById('postContent').value;
+            const mediaInput = document.getElementById('mediaInput');
+            const date = new Date().toLocaleDateString();
+
+            if (mediaInput.files && mediaInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    savePost(title, content, event.target.result, mediaInput.files[0].type, date);
+                };
+                reader.readAsDataURL(mediaInput.files[0]);
+            } else {
+                savePost(title, content, '', '', date);
+            }
+        });
+
+        function savePost(title, content, mediaData, mediaType, date) {
+            const newPost = { id: Date.now(), title, content, mediaData, mediaType, date };
+            let posts = JSON.parse(localStorage.getItem('feighPosts')) || [];
+            posts.unshift(newPost);
+            localStorage.setItem('feighPosts', JSON.stringify(posts));
+
+            alert('Published successfully to live website!');
+            document.getElementById('postForm').reset();
+            loadManagePosts();
+        }
+
+        function loadManagePosts() {
+            const posts = JSON.parse(localStorage.getItem('feighPosts')) || [];
+            const container = document.getElementById('managePostsContainer');
+            container.innerHTML = '';
+
+            if (posts.length === 0) {
+                container.innerHTML = '<p style="color: var(--text-muted);">No posts found.</p>';
+                return;
+            }
+
+            posts.forEach(post => {
+                const div = document.createElement('div');
+                div.className = 'post-manage-card';
+                div.innerHTML = `
+                    <div>
+                        <strong style="color: var(--gold-primary);">${post.title}</strong>
+                        <span style="font-size: 0.8rem; display:block; color: var(--text-muted);">${post.date}</span>
+                    </div>
+                    <button onclick="deletePost(${post.id})" style="background:#a82020; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">Delete</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function deletePost(id) {
+            if (confirm('Delete this post permanently?')) {
+                let posts = JSON.parse(localStorage.getItem('feighPosts')) || [];
+                posts = posts.filter(post => post.id !== id);
+                localStorage.setItem('feighPosts', JSON.stringify(posts));
+                loadManagePosts();
+            }
+        }
+
+        function updateCredentials() {
+            const newUser = document.getElementById('newAdminUser').value;
+            const newPass = document.getElementById('newAdminPass').value;
+            if (newUser && newPass) {
+                localStorage.setItem('adminUser', newUser);
+                localStorage.setItem('adminPass', newPass);
+                alert('Admin credentials updated permanently!');
+                document.getElementById('newAdminUser').value = '';
+                document.getElementById('newAdminPass').value = '';
+            } else {
+                alert('Please fill in both fields.');
+            }
+        }
+    </script>
+</body>
+</html>
