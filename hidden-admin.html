@@ -66,32 +66,29 @@
         <!-- Login Screen -->
         <div id="loginPanel" class="login-box active-panel">
             <h2 style="color: var(--gold-primary); margin-top: 15px;">🔒 Sister Secure Login</h2>
-            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Enter your secret admin passcode to manage posts and community chat:</p>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Enter your secret admin passcode to broadcast updates globally:</p>
             <input type="password" id="adminPasswordInput" placeholder="Enter Password..." onkeydown="if(event.key==='Enter') checkAdminPassword()">
             <button class="admin-btn" onclick="checkAdminPassword()">Log In</button>
         </div>
 
-        <!-- Admin Dashboard (Hidden until password is correct) -->
+        <!-- Admin Dashboard -->
         <div id="dashboardPanel" class="dashboard-box">
-            <h2 style="color: var(--gold-primary); margin-top: 15px;">🛠️ Feigh's Control Panel</h2>
-            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Publish live updates or moderate community discussions.</p>
+            <h2 style="color: var(--gold-primary); margin-top: 15px;">🛠️ Feigh's Global Broadcast Portal</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Upload photos or video reels to instantly publish them worldwide.</p>
             
-            <h3 style="color: var(--gold-light); font-size: 1.1rem; margin-bottom: 10px;">Post New Update</h3>
-            <input type="text" id="postTitle" placeholder="Update Title (e.g., Successful Delivery in Kisumu)">
-            <input type="file" id="postMedia" accept="image/*,video/*" style="border:none; padding: 0;">
-            <textarea id="postContent" rows="4" placeholder="Write details about the errand or delivery..."></textarea>
-            <button class="admin-btn" onclick="createNewPost()" style="margin-bottom: 30px;">Publish Update Live</button>
+            <h3 style="color: var(--gold-light); font-size: 1.1rem; margin-bottom: 10px;">Create New Global Post / Reel</h3>
+            <input type="text" id="postTitle" placeholder="Caption Title (Optional)...">
+            <label style="font-size: 0.85rem; color: #aaa;">Upload Photo or Reel Video:</label>
+            <input type="file" id="postMedia" accept="image/*,video/*" style="border:none; padding: 0; margin-top: 5px;">
+            <textarea id="postContent" rows="4" placeholder="Write details about the errand or delivery... (Text only is also okay!)" style="margin-top: 15px;"></textarea>
+            <button class="admin-btn" onclick="createNewPost()" style="margin-bottom: 30px;">Broadcast Live Worldwide</button>
 
-            <h3 style="color: var(--gold-light); font-size: 1.1rem; margin-bottom: 10px;">Manage Active Posts</h3>
+            <h3 style="color: var(--gold-light); font-size: 1.1rem; margin-bottom: 10px;">Manage / Delete Live Posts</h3>
             <div id="managePostsContainer"></div>
-
-            <h3 style="color: var(--gold-light); font-size: 1.1rem; margin-top: 30px; margin-bottom: 10px;">Moderate Community Chat</h3>
-            <div id="manageChatContainer" style="max-height: 200px; overflow-y: auto; background: #080808; padding: 10px; border-radius: 4px;"></div>
         </div>
     </div>
 
     <script>
-        // Set your sister's secure password here:
         const SECRET_PASSWORD = "feighsecure2026";
 
         function checkAdminPassword() {
@@ -99,7 +96,7 @@
             if (pass === SECRET_PASSWORD) {
                 document.getElementById('loginPanel').classList.remove('active-panel');
                 document.getElementById('dashboardPanel').classList.add('active-panel');
-                loadManageData();
+                loadManagePosts();
             } else {
                 alert('Incorrect password! Access denied.');
             }
@@ -110,8 +107,8 @@
             const content = document.getElementById('postContent').value.trim();
             const mediaInput = document.getElementById('postMedia');
 
-            if (!title || !content) {
-                alert('Please fill in both the title and content.');
+            if (!content && (!mediaInput.files || !mediaInput.files[0])) {
+                alert('Please add some text content or upload a photo/video reel.');
                 return;
             }
 
@@ -123,7 +120,7 @@
                     content,
                     mediaData: mediaData || '',
                     mediaType: mediaType || '',
-                    date: new Date().toLocaleDateString(),
+                    date: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
                     comments: []
                 };
                 posts.unshift(newPost);
@@ -132,8 +129,8 @@
                 document.getElementById('postTitle').value = '';
                 document.getElementById('postContent').value = '';
                 document.getElementById('postMedia').value = '';
-                alert('Update published live!');
-                loadManageData();
+                alert('Successfully broadcasted live worldwide!');
+                loadManagePosts();
             };
 
             if (mediaInput.files && mediaInput.files[0]) {
@@ -148,36 +145,19 @@
             }
         }
 
-        function loadManageData() {
-            // Load Posts
-            const postsContainer = document.getElementById('managePostsContainer');
+        function loadManagePosts() {
+            const container = document.getElementById('managePostsContainer');
             const posts = JSON.parse(localStorage.getItem('feighPosts')) || [];
             
             if (posts.length === 0) {
-                postsContainer.innerHTML = `<p style="font-size: 0.85rem; color: #666;">No active posts found.</p>`;
+                container.innerHTML = `<p style="font-size: 0.85rem; color: #666;">No active posts found.</p>`;
             } else {
-                postsContainer.innerHTML = '';
+                container.innerHTML = '';
                 posts.forEach(post => {
                     const card = document.createElement('div');
                     card.className = 'post-manage-card';
-                    card.innerHTML = `<span style="font-size: 0.9rem;">${post.title}</span> <button class="delete-btn" onclick="deletePost(${post.id})">Delete</button>`;
-                    postsContainer.appendChild(card);
-                });
-            }
-
-            // Load Chat Moderation
-            const chatContainer = document.getElementById('manageChatContainer');
-            const chats = JSON.parse(localStorage.getItem('feighCommunityChat')) || [];
-
-            if (chats.length === 0) {
-                chatContainer.innerHTML = `<p style="font-size: 0.85rem; color: #666;">No chat messages.</p>`;
-            } else {
-                chatContainer.innerHTML = '';
-                chats.forEach((chat, index) => {
-                    const cCard = document.createElement('div');
-                    cCard.className = 'post-manage-card';
-                    cCard.innerHTML = `<span style="font-size: 0.85rem;"><strong>${chat.name}:</strong> ${chat.text}</span> <button class="delete-btn" onclick="deleteChat(${index})">Remove</button>`;
-                    chatContainer.appendChild(cCard);
+                    card.innerHTML = `<span style="font-size: 0.85rem; color: #ccc;">${post.title || post.content.substring(0, 30) + '...'}</span> <button class="delete-btn" onclick="deletePost(${post.id})">Delete</button>`;
+                    container.appendChild(card);
                 });
             }
         }
@@ -186,14 +166,7 @@
             let posts = JSON.parse(localStorage.getItem('feighPosts')) || [];
             posts = posts.filter(p => p.id !== id);
             localStorage.setItem('feighPosts', JSON.stringify(posts));
-            loadManageData();
-        }
-
-        function deleteChat(index) {
-            let chats = JSON.parse(localStorage.getItem('feighCommunityChat')) || [];
-            chats.splice(index, 1);
-            localStorage.setItem('feighCommunityChat', JSON.stringify(chats));
-            loadManageData();
+            loadManagePosts();
         }
     </script>
 
