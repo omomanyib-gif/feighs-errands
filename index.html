@@ -46,6 +46,37 @@
             cursor: pointer;
             font-size: 0.85rem;
         }
+        /* Live Community Chat Styles */
+        .community-chat-section {
+            margin-top: 30px;
+            background: #121212;
+            border: 1px solid #332b0c;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .chat-messages-container {
+            max-height: 250px;
+            overflow-y: auto;
+            background: #080808;
+            border: 1px solid #222;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 15px;
+        }
+        .chat-msg-item {
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #1a1a1a;
+            padding-bottom: 6px;
+        }
+        .chat-msg-item strong {
+            color: var(--gold-primary);
+        }
+        .chat-msg-time {
+            font-size: 0.75rem;
+            color: #666;
+            margin-left: 8px;
+        }
     </style>
 </head>
 <body>
@@ -54,7 +85,7 @@
     <header>
         <a href="admin.html" class="admin-nav-link">🔒 Sister Login</a>
         <h1>Feigh's Errands & Supplies</h1>
-        <h2>Your Trusted Hands in Nairobi ❤️</h2>
+        <h2>Your Trusted Hands in Nairobi ❤️️</h2>
         <p class="tagline">"Servicing the whole of Kenya — Major cities and even in the villages"</p>
         <div class="status-badge">🟢 Open for Errands Today</div>
     </header>
@@ -98,7 +129,7 @@
                     <p>Health, beauty essentials, prescriptions & more.</p>
                 </div>
                 <div class="service-box">
-                    <h4>🏗️ Construction Materials Supply</h4>
+                    <h4>🏗️️ Construction Materials Supply</h4>
                     <p>Sourcing & delivery of building materials (cement, steel, sand, ballast, bricks & more).</p>
                 </div>
                 <div class="service-box">
@@ -108,8 +139,26 @@
             </div>
         </section>
 
+        <!-- Live Community Chat Room Feature -->
+        <section class="community-chat-section">
+            <h3 style="color: var(--gold-primary); margin-bottom: 5px;">🌐 Client Community Chat</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">Talk with other clients, ask questions, or share your feedback openly right here!</p>
+            
+            <div class="chat-messages-container" id="communityChatBox">
+                <!-- Messages will load dynamically here -->
+            </div>
+
+            <div class="comment-input-row" style="flex-direction: column; gap: 8px;">
+                <input type="text" id="chatUserName" placeholder="Your Name or Alias...">
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="chatUserMessage" placeholder="Say something to the community..." onkeydown="if(event.key==='Enter') sendCommunityMessage()">
+                    <button class="comment-btn" onclick="sendCommunityMessage()">Chat</button>
+                </div>
+            </div>
+        </section>
+
         <!-- Direct Customer Chat Widget -->
-        <section class="chat-box">
+        <section class="chat-box" style="margin-top: 25px;">
             <h3 style="color: var(--gold-primary); margin-bottom: 10px;">💬 Direct Message Feigh on WhatsApp</h3>
             <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 15px;">Type your request below and click send to connect instantly:</p>
             <input type="text" id="clientName" placeholder="Your Name"><br>
@@ -124,9 +173,12 @@
         <p>&copy; 2026 Feigh's Errands & Supplies. All rights reserved.<br>Designed by Web Designer Barrack.</p>
     </footer>
 
-    <!-- Script to Load Posts & Handle Secure Sanitized Comments -->
+    <!-- Script to Load Posts, Comments & Live Community Chat -->
     <script>
-        window.addEventListener('DOMContentLoaded', loadPublicPosts);
+        window.addEventListener('DOMContentLoaded', () => {
+            loadPublicPosts();
+            loadCommunityChat();
+        });
 
         function loadPublicPosts() {
             const savedPosts = JSON.parse(localStorage.getItem('feighPosts')) || [];
@@ -157,7 +209,6 @@
                         <p>${escapeHtml(post.content)}</p>
                     `;
 
-                    // Comment Section Container
                     const commentSection = document.createElement('div');
                     commentSection.className = 'comment-section';
                     commentSection.innerHTML = `<h5 style="color: var(--gold-light); margin-bottom: 8px;">Client Comments</h5>`;
@@ -179,7 +230,6 @@
                     }
                     commentSection.appendChild(commentsList);
 
-                    // Input Form Row
                     const inputRow = document.createElement('div');
                     inputRow.className = 'comment-input-row';
                     
@@ -192,6 +242,7 @@
                     textInput.type = 'text';
                     textInput.id = `commenterText_${post.id}`;
                     textInput.placeholder = 'Write a comment...';
+                    textInput.onkeydown = (e) => { if(e.key === 'Enter') addComment(post.id); };
 
                     const btn = document.createElement('button');
                     btn.className = 'comment-btn';
@@ -211,7 +262,45 @@
             }
         }
 
-        // Security Helper to neutralize HTML/Script injections
+        // Live Community Chat Logic
+        function loadCommunityChat() {
+            const chatBox = document.getElementById('communityChatBox');
+            const messages = JSON.parse(localStorage.getItem('feighCommunityChat')) || [];
+            
+            if (messages.length === 0) {
+                chatBox.innerHTML = `<p style="font-size: 0.85rem; color: #666; text-align: center; padding: 15px;">No chat messages yet. Start the conversation below!</p>`;
+                return;
+            }
+
+            chatBox.innerHTML = '';
+            messages.forEach(msg => {
+                const div = document.createElement('div');
+                div.className = 'chat-msg-item';
+                div.innerHTML = `<strong>${escapeHtml(msg.name)}</strong><span class="chat-msg-time">${msg.time}</span><br>${escapeHtml(msg.text)}`;
+                chatBox.appendChild(div);
+            });
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function sendCommunityMessage() {
+            const nameInput = document.getElementById('chatUserName');
+            const textInput = document.getElementById('chatUserMessage');
+
+            const name = nameInput.value.trim() || 'Anonymous Client';
+            const text = textInput.value.trim();
+
+            if (!text) return;
+
+            const timeString = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const messages = JSON.parse(localStorage.getItem('feighCommunityChat')) || [];
+            
+            messages.push({ name, text, time: timeString });
+            localStorage.setItem('feighCommunityChat', JSON.stringify(messages));
+
+            textInput.value = '';
+            loadCommunityChat();
+        }
+
         function escapeHtml(text) {
             const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
             return text.replace(/[&<>"']/g, function(m) { return map[m]; });
