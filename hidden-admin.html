@@ -66,30 +66,30 @@
         <!-- Login Screen -->
         <div id="loginPanel" class="login-box active-panel">
             <h2 style="color: var(--gold-primary); margin-top: 15px;">🔒 Sister Secure Login</h2>
-            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Enter your secret admin passcode to broadcast updates globally:</p>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Enter your secret admin passcode to broadcast updates:</p>
             <input type="password" id="adminPasswordInput" placeholder="Enter Password..." onkeydown="if(event.key==='Enter') checkAdminPassword()">
             <button class="admin-btn" onclick="checkAdminPassword()">Log In</button>
         </div>
 
         <!-- Admin Dashboard -->
         <div id="dashboardPanel" class="dashboard-box">
-            <h2 style="color: var(--gold-primary); margin-top: 15px;">🛠️ Feigh's Global Broadcast Portal</h2>
-            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Upload photos or video reels to instantly publish them worldwide.</p>
+            <h2 style="color: var(--gold-primary); margin-top: 15px;">🛠️ Feigh's Admin Broadcast Portal</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Upload photos or video reels for your clients to view.</p>
             
-            <h3 style="color: var(--gold-light); font-size: 1.1rem; margin-bottom: 10px;">Create New Global Post / Reel</h3>
+            <h3 style="color: var(--gold-light); font-size: 1.1rem; margin-bottom: 10px;">Create New Post / Reel</h3>
             <input type="text" id="postTitle" placeholder="Caption Title (Optional)...">
             <label style="font-size: 0.85rem; color: #aaa;">Upload Photo or Reel Video:</label>
             <input type="file" id="postMedia" accept="image/*,video/*" style="border:none; padding: 0; margin-top: 5px;">
-            <textarea id="postContent" rows="4" placeholder="Write details about the errand or delivery... (Text only is also okay!)" style="margin-top: 15px;"></textarea>
-            <button class="admin-btn" onclick="createNewPost()" style="margin-bottom: 30px;">Broadcast Live Worldwide</button>
+            <textarea id="postContent" rows="4" placeholder="Write details about the errand or delivery..." style="margin-top: 15px;"></textarea>
+            <button class="admin-btn" onclick="createNewPost()" style="margin-bottom: 30px;">Publish Update</button>
 
-            <h3 style="color: var(--gold-light); font-size: 1.1rem; margin-bottom: 10px;">Manage / Delete Live Posts</h3>
+            <h3 style="color: var(--gold-light); font-size: 1.1rem; margin-bottom: 10px;">Manage Active Posts</h3>
             <div id="managePostsContainer"></div>
         </div>
     </div>
 
     <script>
-        const SECRET_PASSWORD = "feighsecure2026";
+        const SECRET_PASSWORD = "faith123";
 
         function checkAdminPassword() {
             const pass = document.getElementById('adminPasswordInput').value;
@@ -120,8 +120,7 @@
                     content,
                     mediaData: mediaData || '',
                     mediaType: mediaType || '',
-                    date: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                    comments: []
+                    date: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                 };
                 posts.unshift(newPost);
                 localStorage.setItem('feighPosts', JSON.stringify(posts));
@@ -129,7 +128,7 @@
                 document.getElementById('postTitle').value = '';
                 document.getElementById('postContent').value = '';
                 document.getElementById('postMedia').value = '';
-                alert('Successfully broadcasted live worldwide!');
+                alert('Successfully published update!');
                 loadManagePosts();
             };
 

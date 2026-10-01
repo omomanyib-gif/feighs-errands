@@ -55,43 +55,6 @@
         .post-body {
             padding: 15px;
         }
-        .comment-section {
-            background: #090909;
-            padding: 15px;
-            border-top: 1px solid #222;
-        }
-        .comment-box {
-            background: #141414;
-            padding: 8px 12px;
-            border-radius: 6px;
-            margin-bottom: 6px;
-            font-size: 0.88rem;
-            color: #ddd;
-        }
-        .comment-input-group {
-            display: flex;
-            gap: 8px;
-            margin-top: 10px;
-        }
-        .comment-input-group input {
-            flex: 1;
-            padding: 8px 12px;
-            background: #1a1a1a;
-            border: 1px solid #443b12;
-            color: white;
-            border-radius: 6px;
-            font-size: 0.85rem;
-        }
-        .comment-btn {
-            background: var(--gold-primary);
-            color: black;
-            border: none;
-            padding: 8px 14px;
-            font-weight: bold;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.85rem;
-        }
         .admin-nav-link {
             display: inline-block;
             margin-bottom: 10px;
@@ -127,7 +90,7 @@
             <p>We run errands on your behalf — reliably, conveniently, and professionally across all major cities and villages.</p>
         </section>
 
-        <!-- Dynamic Reels Feed Section -->
+        <!-- Dynamic Reels Feed Section (Admin Broadcasts Only) -->
         <section id="dynamicPostsSection" style="display: none; margin-bottom: 30px;">
             <h2 style="text-align: center; margin-bottom: 20px; color: var(--gold-primary);">📱 Feigh's Live Feed & Reels</h2>
             <div class="reels-feed-container" id="postsContainer"></div>
@@ -158,7 +121,7 @@
                     <p>Health, beauty essentials, prescriptions & more.</p>
                 </div>
                 <div class="service-box">
-                    <h4>🏗️️ Construction Materials Supply</h4>
+                    <h4>🏗 Construction Materials Supply</h4>
                     <p>Sourcing & delivery of building materials (cement, steel, sand, ballast, bricks & more).</p>
                 </div>
                 <div class="service-box">
@@ -184,7 +147,7 @@
         <p>&copy; 2026 Feigh's Errands & Supplies. All rights reserved.<br>Designed by Web Designer Barrack.</p>
     </footer>
 
-    <!-- Script to Load Global Reels Feed & Quick Comments -->
+    <!-- Script to Load Admin Reels Feed -->
     <script>
         window.addEventListener('DOMContentLoaded', loadPublicPosts);
 
@@ -224,82 +187,11 @@
                             <p style="font-size: 0.95rem; color: #ccc; line-height: 1.4;">${escapeHtml(post.content)}</p>
                         </div>
                     `;
-
-                    // Comment Section
-                    const commentSection = document.createElement('div');
-                    commentSection.className = 'comment-section';
-                    commentSection.innerHTML = `<h5 style="color: var(--gold-light); margin-bottom: 8px; font-size: 0.85rem;">Comments</h5>`;
-                    
-                    const commentsList = document.createElement('div');
-                    if (post.comments && post.comments.length > 0) {
-                        post.comments.forEach(c => {
-                            const cBox = document.createElement('div');
-                            cBox.className = 'comment-box';
-                            cBox.innerHTML = `<strong>${escapeHtml(c.name)}:</strong> ${escapeHtml(c.text)}`;
-                            commentsList.appendChild(cBox);
-                        });
-                    } else {
-                        const noC = document.createElement('p');
-                        noC.style.cssText = 'font-size: 0.8rem; color: #666; margin-bottom: 8px;';
-                        noC.textContent = 'No comments yet. Say something nice!';
-                        commentsList.appendChild(noC);
-                    }
-                    commentSection.appendChild(commentsList);
-
-                    // Simplified Input Box (No mandatory name field required)
-                    const inputGroup = document.createElement('div');
-                    inputGroup.className = 'comment-input-group';
-                    
-                    const textInput = document.createElement('input');
-                    textInput.type = 'text';
-                    textInput.id = `commentInput_${post.id}`;
-                    textInput.placeholder = 'Write a comment... (optional: add name like "John: text")';
-                    textInput.onkeydown = (e) => { if(e.key === 'Enter') addQuickComment(post.id); };
-
-                    const btn = document.createElement('button');
-                    btn.className = 'comment-btn';
-                    btn.textContent = 'Post';
-                    btn.onclick = () => addQuickComment(post.id);
-
-                    inputGroup.appendChild(textInput);
-                    inputGroup.appendChild(btn);
-                    commentSection.appendChild(inputGroup);
-
-                    postCard.appendChild(commentSection);
                     container.appendChild(postCard);
                 });
             } else {
                 section.style.display = 'none';
             }
-        }
-
-        function addQuickComment(postId) {
-            const input = document.getElementById(`commentInput_${postId}`);
-            const rawText = input.value.trim();
-
-            if (!rawText) return;
-
-            let name = 'Anonymous Client';
-            let text = rawText;
-
-            // If user typed "Name: message", split it automatically
-            if (rawText.includes(':')) {
-                const parts = rawText.split(':');
-                name = parts[0].trim();
-                text = parts.slice(1).join(':').trim();
-            }
-
-            let posts = JSON.parse(localStorage.getItem('feighPosts')) || [];
-            posts = posts.map(post => {
-                if (post.id === postId) {
-                    if (!post.comments) post.comments = [];
-                    post.comments.push({ name, text });
-                }
-                return post;
-            });
-
-            localStorage.setItem('feighPosts', JSON.stringify(posts));
-            loadPublicPosts();
         }
 
         function escapeHtml(text) {
