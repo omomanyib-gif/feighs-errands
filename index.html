@@ -46,7 +46,6 @@
             cursor: pointer;
             font-size: 0.85rem;
         }
-        /* Live Community Chat Styles */
         .community-chat-section {
             margin-top: 30px;
             background: #121212;
@@ -77,15 +76,29 @@
             color: #666;
             margin-left: 8px;
         }
+        .admin-nav-link {
+            display: inline-block;
+            margin-bottom: 10px;
+            color: var(--gold-primary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            border: 1px solid var(--gold-primary);
+            padding: 4px 10px;
+            border-radius: 4px;
+        }
+        .admin-nav-link:hover {
+            background: var(--gold-primary);
+            color: black;
+        }
     </style>
 </head>
 <body>
 
     <!-- Header Section -->
     <header>
-        <a href="admin.html" class="admin-nav-link">🔒 Sister Login</a>
+        <a href="hidden-admin.html" class="admin-nav-link">🔒 Sister Login</a>
         <h1>Feigh's Errands & Supplies</h1>
-        <h2>Your Trusted Hands in Nairobi ❤️️</h2>
+        <h2>Your Trusted Hands in Nairobi ❤️</h2>
         <p class="tagline">"Servicing the whole of Kenya — Major cities and even in the villages"</p>
         <div class="status-badge">🟢 Open for Errands Today</div>
     </header>
@@ -129,7 +142,7 @@
                     <p>Health, beauty essentials, prescriptions & more.</p>
                 </div>
                 <div class="service-box">
-                    <h4>🏗️️ Construction Materials Supply</h4>
+                    <h4>🏗️ Construction Materials Supply</h4>
                     <p>Sourcing & delivery of building materials (cement, steel, sand, ballast, bricks & more).</p>
                 </div>
                 <div class="service-box">
@@ -144,9 +157,7 @@
             <h3 style="color: var(--gold-primary); margin-bottom: 5px;">🌐 Client Community Chat</h3>
             <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">Talk with other clients, ask questions, or share your feedback openly right here!</p>
             
-            <div class="chat-messages-container" id="communityChatBox">
-                <!-- Messages will load dynamically here -->
-            </div>
+            <div class="chat-messages-container" id="communityChatBox"></div>
 
             <div class="comment-input-row" style="flex-direction: column; gap: 8px;">
                 <input type="text" id="chatUserName" placeholder="Your Name or Alias...">
@@ -262,7 +273,6 @@
             }
         }
 
-        // Live Community Chat Logic
         function loadCommunityChat() {
             const chatBox = document.getElementById('communityChatBox');
             const messages = JSON.parse(localStorage.getItem('feighCommunityChat')) || [];
